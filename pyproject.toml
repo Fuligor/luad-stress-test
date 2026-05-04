@@ -1,0 +1,17 @@
+[project]
+name = "luad-stress-test"
+version = "0.1.0"
+description = "Add your description here"
+readme = "README.md"
+authors = [
+    { name = "Adam Krawczyk", email = "adam.krawczyk@ideas-ncbr.pl" }
+]
+requires-python = ">=3.12"
+dependencies = []
+
+[project.scripts]
+luad-stress-test = "luad_stress_test:main"
+
+[build-system]
+requires = ["uv_build>=0.10.11,<0.11.0"]
+build-backend = "uv_build"
