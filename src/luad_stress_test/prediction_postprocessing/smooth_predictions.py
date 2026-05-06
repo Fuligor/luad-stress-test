@@ -1,29 +1,28 @@
 import json
 from pathlib import Path
 
-from luad_stress_test.wsi.tissue_image.utils import parser_template
-from luad_stress_test.wsi.utils import TileManifest
+from luad_stress_test.preprocessing.wsi.tissue_image.utils import parser_template
+from luad_stress_test.preprocessing.wsi.utils import TileManifest
 from jsonargparse import auto_cli
 from loguru import logger
 import numpy as np
 import pandas as pd
 from scipy.signal import convolve2d
 
-from luad_stress_test.utils import Label
+from luad_stress_test.utils import ArtifactType, Label
 from luad_stress_test.path_manager import PathManager
 
 
 def smooth_predictions(
     model_id: str,
-    artifact: str | None = None,
-    sample_ratio: float | None = None,
+    artifact: ArtifactType | None = None,
     weighted: bool = False,
 ):
-    patches_dir = PathManager.data_processed("dhmc/patches")
-    base_results_dir = PathManager.predictions_dir(model_id, "DHMC-base")
+    patches_dir = PathManager.dhmc_processed()
+    base_results_dir = PathManager.predictions_dir("dhmc", None, model_id)
 
     if artifact is not None:
-        artifact_results_dir = PathManager.predictions_dir(model_id, f"DHMC-{artifact}")
+        artifact_results_dir = PathManager.predictions_dir("dhmc", artifact, model_id)
 
     patterns = [Label(i).name for i in range(len(Label))]
 
@@ -56,11 +55,6 @@ def smooth_predictions(
             artifact_predictions = pd.read_csv(
                 artifact_slide_prediction_dir / "predictions.csv", index_col=0
             )
-
-            if sample_ratio is not None:
-                artifact_predictions = artifact_predictions.sample(
-                    frac=sample_ratio, random_state=42
-                )
 
             for index, row in artifact_predictions.iterrows():
                 predictions.loc[index] = row
@@ -105,15 +99,7 @@ def smooth_predictions(
                 int(np.argmax(smooth_preds))
             ).name
 
-        output_dir = (
-            base_results_dir if artifact is None else artifact_results_dir
-        ) / slide_path.stem
-        output_name = (
-            f"predictions_smooth_{artifact}_{sample_ratio}.csv"
-            if sample_ratio and artifact
-            else "predictions_smooth.csv"
-        )
-        results.to_csv(output_dir / output_name)
+        results.to_csv(PathManager.prediction_smooth_file("dhmc", artifact, model_id))
 
 
 if __name__ == "__main__":

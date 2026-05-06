@@ -8,6 +8,8 @@ from pathlib import Path
 import os
 from typing import Optional
 
+from luad_stress_test.utils import ArtifactType, DatasetName
+
 
 class PathManager:
     """Centralized path manager for accessing all project paths."""
@@ -46,38 +48,71 @@ class PathManager:
         return cls._DATA_ROOT
 
     @classmethod
-    def data_raw(cls, subdir: Optional[str] = None) -> Path:
-        """Return path to raw data directory.
+    def __artifact_to_name(cls, artifact: ArtifactType | None) -> str:
+        """Convert artifact type to directory name."""
+        return artifact if artifact else "base"
 
-        Args:
-            subdir: Optional subdirectory within raw data (e.g., "dhmc")
+    @classmethod
+    def anorak_raw(cls) -> Path:
+        """Return path to Anorak raw data directory."""
+        return cls.data_root() / "data" / "raw" / "anorak"
 
-        Returns:
-            Path object pointing to data/raw or data/raw/{subdir}
-        """
-        cls._load_config()
-        assert cls._DATA_ROOT is not None
-        path = cls._DATA_ROOT / "data" / "raw"
-        if subdir:
-            path = path / subdir
+    @classmethod
+    def anorak_processed(cls, artifact_name: ArtifactType | None = None) -> Path:
+        """Return path to Anorak processed data directory."""
+        path = (
+            cls.data_root()
+            / "data"
+            / "processed"
+            / "anorak"
+            / cls.__artifact_to_name(artifact_name)
+        )
         path.mkdir(parents=True, exist_ok=True)
         return path
 
     @classmethod
-    def data_processed(cls, subdir: Optional[str] = None) -> Path:
-        """Return path to processed data directory.
+    def luad_c_raw(cls) -> Path:
+        """Return path to LUAD-C raw data directory."""
+        return cls.data_root() / "data" / "raw" / "tcga"
 
-        Args:
-            subdir: Optional subdirectory within processed data (e.g., "dhmc/patches")
+    @classmethod
+    def luad_c_images(cls) -> Path:
+        """Return path to LUAD-C raw images directory."""
+        return cls.luad_c_raw() / "images"
 
-        Returns:
-            Path object pointing to data/processed or data/processed/{subdir}
-        """
-        cls._load_config()
-        assert cls._DATA_ROOT is not None
-        path = cls._DATA_ROOT / "data" / "processed"
-        if subdir:
-            path = path / subdir
+    @classmethod
+    def luad_c_annotations(cls) -> Path:
+        """Return path to LUAD-C raw annotations directory."""
+        return cls.luad_c_raw() / "annotations"
+
+    @classmethod
+    def luad_c_processed(cls, artifact_name: ArtifactType | None = None) -> Path:
+        """Return path to LUAD-C processed data directory."""
+        path = (
+            cls.data_root()
+            / "data"
+            / "processed"
+            / "luad-c"
+            / cls.__artifact_to_name(artifact_name)
+        )
+        path.mkdir(parents=True, exist_ok=True)
+        return path
+
+    @classmethod
+    def dhmc_raw(cls) -> Path:
+        """Return path to DHMC raw data directory."""
+        return cls.data_root() / "data" / "raw" / "dhmc"
+
+    @classmethod
+    def dhmc_processed(cls, artifact_name: ArtifactType | None = None) -> Path:
+        """Return path to DHMC processed data directory."""
+        path = (
+            cls.data_root()
+            / "data"
+            / "processed"
+            / "dhmc"
+            / cls.__artifact_to_name(artifact_name)
+        )
         path.mkdir(parents=True, exist_ok=True)
         return path
 
@@ -86,27 +121,35 @@ class PathManager:
         """Return path to DHMC metadata CSV file."""
         cls._load_config()
         assert cls._DATA_ROOT is not None
-        metadata_path = cls._DATA_ROOT / "data" / "raw" / "dhmc" / "metadata.csv"
+        metadata_path = cls.dhmc_raw() / "metadata.csv"
         return metadata_path
 
     @classmethod
-    def experiment_dir(cls, model_name: str) -> Path:
-        """Return path to experiment directory for a specific model.
+    def processed_path(
+        cls, dataset_name: DatasetName, artifact_name: ArtifactType | None = None
+    ) -> Path:
+        """Return path to processed data directory for a given dataset and artifact."""
+        match dataset_name:
+            case "anorak":
+                return cls.anorak_processed(artifact_name)
+            case "luad-c":
+                return cls.luad_c_processed(artifact_name)
+            case "dhmc":
+                return cls.dhmc_processed(artifact_name)
+            case _:
+                raise ValueError(f"Unknown dataset name: {dataset_name}")
 
-        Args:
-            model_name: Name of the model (e.g., "resnet", "vit")
-
-        Returns:
-            Path object pointing to experiments/luad/{model_name}
-        """
+    @classmethod
+    def model_dir(cls) -> Path:
+        """Return path to model directory."""
         cls._load_config()
         assert cls._PROJECT_ROOT is not None
-        path = cls._PROJECT_ROOT / "experiments" / "luad" / model_name
+        path = cls._PROJECT_ROOT / "models"
         path.mkdir(parents=True, exist_ok=True)
         return path
 
     @classmethod
-    def experiment_checkpoint(cls, model_name: str) -> Path:
+    def model_checkpoint(cls, model_name: str) -> Path:
         """Return path to checkpoint directory for a specific model.
 
         Args:
@@ -117,29 +160,65 @@ class PathManager:
         """
         cls._load_config()
         assert cls._PROJECT_ROOT is not None
-        path = cls._PROJECT_ROOT / "experiments" / "luad" / model_name / "checkpoints"
+        path = cls.model_dir() / model_name / "checkpoints"
         path.mkdir(parents=True, exist_ok=True)
         return path
 
     @classmethod
-    def predictions_dir(
-        cls, model_name: Optional[str] = None, subdir: Optional[str] = None
-    ) -> Path:
-        """Return path to predictions directory for a specific model.
-
-        Args:
-            model_name: Name of the model (e.g., "resnet", "vit")
-            subdir: Optional subdirectory (e.g., dataset name)
-
-        Returns:
-            Path object pointing to predictions/{model_name} or predictions/{model_name}/{subdir}
-        """
+    def results_dir(cls) -> Path:
+        """Return path to results directory for a specific model."""
         cls._load_config()
         assert cls._PROJECT_ROOT is not None
         path = cls._PROJECT_ROOT / "predictions"
-        if model_name:
-            path = path / model_name
-        if subdir:
-            path = path / subdir
         path.mkdir(parents=True, exist_ok=True)
         return path
+
+    @classmethod
+    def results_file(cls) -> Path:
+        """Return path to results CSV file."""
+        cls._load_config()
+        assert cls._PROJECT_ROOT is not None
+        path = cls.results_dir() / "results.csv"
+        return path
+
+    @classmethod
+    def predictions_dir(
+        cls,
+        dataset_name: DatasetName,
+        artifact_name: ArtifactType | None,
+        model_name: str,
+    ) -> Path:
+        cls._load_config()
+        assert cls._PROJECT_ROOT is not None
+        path = (
+            cls.results_dir()
+            / model_name
+            / dataset_name
+            / cls.__artifact_to_name(artifact_name)
+        )
+        path.mkdir(parents=True, exist_ok=True)
+        return path
+
+    @classmethod
+    def prediction_smooth_file(
+        cls,
+        dataset_name: DatasetName,
+        artifact_name: ArtifactType | None,
+        model_name: str,
+    ) -> Path:
+        return (
+            cls.predictions_dir(dataset_name, artifact_name, model_name)
+            / "predictions_smooth.csv"
+        )
+
+    @classmethod
+    def predominant_pattern_file(
+        cls,
+        dataset_name: DatasetName,
+        artifact_name: ArtifactType | None,
+        model_name: str,
+    ) -> Path:
+        return (
+            cls.predictions_dir(dataset_name, artifact_name, model_name)
+            / "predominant_patterns.csv"
+        )

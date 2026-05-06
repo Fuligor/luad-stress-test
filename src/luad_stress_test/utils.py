@@ -4,7 +4,7 @@ from typing import Literal
 
 from loguru import logger
 
-from luad_stress_test.models.classification import ClassificationModel
+from luad_stress_test.predict.models.classification import ClassificationModel
 from luad_stress_test.path_manager import PathManager
 
 ArtifactType = Literal["blur", "dust", "fold", "marker", "prec", "stitch"]
@@ -25,7 +25,7 @@ def load_model(
     model_name: str,
     checkpoint_name: str | None = None,
 ) -> ClassificationModel:
-    checkpoint_dir = PathManager.experiment_checkpoint(model_name)
+    checkpoint_dir = PathManager.model_checkpoint(model_name)
     checkpoint_path: Path
 
     if checkpoint_name is not None:
