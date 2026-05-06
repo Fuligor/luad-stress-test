@@ -4,10 +4,7 @@ version = "0.1.0"
 description = "Add your description here"
 readme = "README.md"
 authors = [
-    { name = "Zuzanna Krawczyk-Borysiak", email = "zuzanna.krawczyk-borysiak@ideas.edu.pl" },
-    { name = "Adam Krawczyk", email = "adam.krawczyk@akces-ncbr.pl" },
-    { name = "Małgorzata Sokół", email = "malgorzata.sokol@ideas.edu.pl" },
-    { name = "Zaneta Swiderska-Chadaj", email = "zaneta.swiderska-chadaj@ideas.edu.pl" },
+    { name = "anonymous", email = "anonymous@anonymous.com" },
 ]
 classifiers = [
   "Intended Audience :: Science/Research",

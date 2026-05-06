@@ -226,7 +226,4 @@ See [LICENSE.md](LICENSE.md)
 
 ## Authors
 
-- Zuzanna Krawczyk-Borysiak
-- Adam Krawczyk
-- Małgorzata Sokół
-- Zaneta Swiderska-Chadaj
+- anonymous

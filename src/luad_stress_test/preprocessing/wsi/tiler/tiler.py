@@ -1,4 +1,3 @@
-from importlib.metadata import version
 from itertools import product
 import json
 from pathlib import Path
@@ -141,7 +140,7 @@ class WSITiler:
         )
 
         manifest: TileManifest = {
-            "version": version("ideas-wsi"),
+            "version": "0.2.0a1",
             "slide": {
                 "path": str(slide.path),
                 "name": slide_metadata["slide_name"],
