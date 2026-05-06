@@ -225,5 +225,4 @@ Each encoder model has specific configuration:
 See [LICENSE.md](LICENSE.md)
 
 ## Authors
-
-- anonymous
+anonymous
