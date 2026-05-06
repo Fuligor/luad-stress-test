@@ -6,8 +6,11 @@ readme = "README.md"
 authors = [
     { name = "Zuzanna Krawczyk-Borysiak", email = "zuzanna.krawczyk-borysiak@ideas.edu.pl" },
     { name = "Adam Krawczyk", email = "adam.krawczyk@akces-ncbr.pl" },
-    { name = "Magłorzata Sokół", email = "maglorzata.sokol@ideas.edu.pl" },
+    { name = "Małgorzata Sokół", email = "malgorzata.sokol@ideas.edu.pl" },
     { name = "Zaneta Swiderska-Chadaj", email = "zaneta.swiderska-chadaj@ideas.edu.pl" },
+]
+classifiers = [
+  "Intended Audience :: Science/Research",
 ]
 requires-python = ">=3.12"
 dependencies = [
@@ -69,7 +72,7 @@ url = "https://download.pytorch.org/whl/cu124"
 explicit = true
 
 [project.scripts]
-luad-stress-test = "luad_stress_test:main"
+luad-stress-test = "luad_stress_test.__main__:cli"
 
 [build-system]
 requires = ["uv_build>=0.10.11,<0.11.0"]
