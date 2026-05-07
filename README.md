@@ -224,11 +224,11 @@ Each encoder model has specific configuration:
 
 See [LICENSE.md](LICENSE.md)
 
-### LUAD-C dataset
+## LUAD-C dataset
 LUAD C dataset is avaliable via [link](https://www.kaggle.com/datasets/researcher0126/luad-c/data).
 Demo version with 50 samples from each category is avaliable under following [link](https://www.kaggle.com/datasets/researcher0126/luad-c-demo/data)
 
-### External datasets
+## External datasets
 External data used:
 
 ANORAK: A large-scale, annotated lung cancer dataset. [Link](https://zenodo.org/records/10016027)
